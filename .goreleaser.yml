@@ -1,11 +1,3 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
-before:
-  hooks:
-    # you may remove this if you don't use vgo
-    - go mod download
-    # you may remove this if you don't need go generate
-    - go generate ./...
 builds:
 - env:
   - CGO_ENABLED=0
@@ -19,10 +11,34 @@ archives:
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "{{ .Tag }}"
 changelog:
   sort: asc
   filters:
     exclude:
     - '^docs:'
     - '^test:'
+nfpms:
+  -
+    id: default
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+    # Your app's vendor.
+    # Default is empty.
+    vendor: KAYAK Software Corporation
+    homepage: https://www.kayak.com
+    maintainer: Neil Hanlon <nhanlon@kayak.com>
+    description: A persistent SNMP script that exports TC Queue and Class statistics for graphing
+    license: Apache 2.0
+
+    formats:
+      - rpm
+      - deb
+    dependencies:
+      - iproute
+
+    # Override default /usr/local/bin destination for binaries
+    bindir: /usr/bin
+
+    config_files:
+      "tc_reader.conf": "/etc/tc_reader.conf"
